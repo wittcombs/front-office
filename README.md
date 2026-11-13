@@ -9,6 +9,6 @@ It installs as an app and works offline:
 - **iPhone (Safari):** Share → Add to Home Screen.
 - **Android (Chrome):** ⋮ menu → Install app.
 
-When a new version is published, the app shows "A new version is ready" the next time it opens online. Tap **Update now**. Saves stay on your device.
+Updates arrive on their own: the next time you open the app with a connection, it loads the newest version. Saves stay on your device.
 
 This repository holds only the built game.

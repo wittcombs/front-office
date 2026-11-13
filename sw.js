@@ -1,13 +1,11 @@
-// Offline worker for Front Office League. Build 1b8134f872ac.
-const CACHE = 'fol-1b8134f872ac';
+// Offline worker for Front Office League. Build 395321fd1231.
+const CACHE = 'fol-395321fd1231';
 const FILES = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 
+// A new worker takes over at once (it only decides where the next page load comes from; it never reloads one).
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES)));
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES)).then(() => self.skipWaiting()));
 });
-
-// A new version waits until you tap "Update now", so a game in progress never reloads by surprise.
-self.addEventListener('message', (e) => { if (e.data === 'activate') self.skipWaiting(); });
 
 self.addEventListener('activate', (e) => {
   e.waitUntil(caches.keys()
@@ -15,15 +13,22 @@ self.addEventListener('activate', (e) => {
     .then(() => self.clients.claim()));
 });
 
-// The game is served from the copy on the device, so it opens instantly and works with no connection.
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
   const url = new URL(e.request.url);
   if (url.origin !== location.origin) return;
-  e.respondWith(caches.open(CACHE).then(async (c) => {
-    const key = e.request.mode === 'navigate' ? 'index.html' : e.request;
-    const hit = await c.match(key, { ignoreSearch: true });
-    if (hit) return hit;
-    try { return await fetch(e.request); } catch { return (await c.match('index.html')) || Response.error(); }
-  }));
+  // Opening the app: the newest version when online (checked with the server, so nothing re-downloads unless
+  // it changed), the copy on the device when offline.
+  if (e.request.mode === 'navigate') {
+    e.respondWith((async () => {
+      const c = await caches.open(CACHE);
+      try {
+        const r = await fetch('index.html', { cache: 'no-cache' });
+        if (r.ok) { c.put('index.html', r.clone()); return r; }
+      } catch {}
+      return (await c.match('index.html')) || Response.error();
+    })());
+    return;
+  }
+  e.respondWith(caches.open(CACHE).then(async (c) => (await c.match(e.request, { ignoreSearch: true })) || fetch(e.request)));
 });

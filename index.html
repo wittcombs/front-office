@@ -1332,44 +1332,10 @@ Error generating stack: `+s.message+`
 <body>
 <div id="root"></div>
 
-<div id="pwa-update" role="status" style="display:none;position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9999;gap:12px;align-items:center;padding:10px 14px;border-radius:10px;background:#0f1d17;color:#eef3f0;box-shadow:0 8px 28px rgba(0,0,0,.4);font:600 14px system-ui,sans-serif;max-width:calc(100vw - 32px)">
-  <span>A new version is ready.</span>
-  <button type="button" id="pwa-reload" style="font:inherit;padding:6px 12px;border-radius:8px;border:0;background:#8fd9b4;color:#0f1d17;cursor:pointer">Update now</button>
-</div>
 <script>
-(function () {
-  if (!('serviceWorker' in navigator)) return;
-  var banner = document.getElementById('pwa-update');
-  var reloading = false;
-  navigator.serviceWorker.addEventListener('controllerchange', function () {
-    if (reloading) return;
-    reloading = true;
-    location.reload();
-  });
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('sw.js').then(function (reg) {
-      // Shown only when a new version has downloaded and is waiting (an inline display style, since a
-      // "hidden" attribute loses to it). Tapping it switches to the new version and reloads once.
-      function offer(worker) {
-        banner.style.display = 'flex';
-        document.getElementById('pwa-reload').onclick = function () {
-          banner.style.display = 'none';
-          worker.postMessage('activate');
-        };
-      }
-      if (reg.waiting && navigator.serviceWorker.controller) offer(reg.waiting);
-      reg.addEventListener('updatefound', function () {
-        var w = reg.installing;
-        if (!w) return;
-        w.addEventListener('statechange', function () {
-          if (w.state === 'installed' && navigator.serviceWorker.controller) offer(w);
-        });
-      });
-      // Look for a new version whenever the app comes back to the front.
-      document.addEventListener('visibilitychange', function () { if (!document.hidden) reg.update(); });
-    }).catch(function () {});
-  });
-})();
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+}
 </script>
 </body>
 </html>
