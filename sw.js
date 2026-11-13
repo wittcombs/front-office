@@ -1,5 +1,5 @@
-// Offline worker for Front Office League. Build 05f434b990fd.
-const CACHE = 'fol-05f434b990fd';
+// Offline worker for Front Office League. Build 1b8134f872ac.
+const CACHE = 'fol-1b8134f872ac';
 const FILES = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 
 self.addEventListener('install', (e) => {
