@@ -1,5 +1,5 @@
-// Offline worker for Front Office League. Build 115bf4283e7c.
-const CACHE = 'fol-115bf4283e7c';
+// Offline worker for Front Office League. Build 6751e3e8123a.
+const CACHE = 'fol-6751e3e8123a';
 const FILES = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 
 // A new worker takes over at once (it only decides where the next page load comes from; it never reloads one).
